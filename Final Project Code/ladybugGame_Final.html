@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Ladybug Game</title>
+  <style>
+    body {
+
+    }
+    .container{
+      display:flex;
+    }
+    .game{
+      display:inline-block;
+      width:  700px;
+      height: 700px;
+      border: 5px solid black;
+      margin: left;
+      background-image: url('https://media.istockphoto.com/vectors/cartoon-grass-vector-id865924416?k=6&m=865924416&s=612x612&w=0&h=bPclnniKP1n2qHfaQhotVQtDMjZfawO4nVc5q-WkXAk=');
+    }
+    .ladybug{
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      transition: -webkit-transform .5s;
+    }
+    .Stats{
+      display:inline-block;
+      margin: right;
+      width:  300px;
+      height: 700px;
+      border: 5px solid black;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+  <div class="game" id=gameBoard></div>
+  <div class="Stats" id="div_id">
+    <h2>Ladybug Game</h2>
+    <p>Intructions: Click the ladybugs until they are squashed. Some ladybugs are stronger than others and need multiple clicks!</p>
+  </div>
+</div>
+<script>
+class Ladybug{
+  constructor(){
+    this.x=Math.floor(Math.random()*700);//max x=500
+    this.y=Math.floor(Math.random()*700);//max y=500
+  }
+  getX(){return this.x;}
+  getY(){ return this.y;}
+}
+  (function() {
+    "use strict";
+    var numberOfBugs=3;
+    var ladybug;
+    var i = 0;
+    var count=numberOfBugs;
+    var new_span = document.createElement('span');
+    while (i<numberOfBugs) {
+      let newBug=new Ladybug();
+      ladybug = document.createElement("img");
+      ladybug.className = "ladybug";
+      let uniqueId = "ladybug" + i;
+      ladybug.id = uniqueId;
+      ladybug.direction = 0;
+      ladybug.speed = 3*i+4;
+      ladybug.src = "ladybug1.png";
+      ladybug.style.left=newBug.getX()+"px";
+      ladybug.style.top=newBug.getY()+"px";
+      var display = document.getElementById("div_id");
+      var board = document.getElementById("gameBoard");
+      ladybug.addEventListener('click', function(e){
+        var oldspeed = this.speed;
+        this.speed = Math.max(0,this.speed-2);
+        if (0 == this.speed) {
+          this.src = "ladybug5.png";
+          var k;
+          var j=1;
+          for(k=0; k<=9; k++){
+            j=j-.1;
+            this.style.transform="scale("+j+","+j+")";
+          }
+          if(oldspeed !=0){
+            count--;
+        }
+          new_span.Stats = 'num_tiles';
+          new_span.innerText = "Ladybugs left: "+count;
+          display.appendChild(new_span);
+        }
+        else{
+          if(this.src=="ladybug1.png"){
+            this.src = "ladybug2.png";
+          }
+          else{
+            this.src = "ladybug3.png";
+          }
+        }
+			});
+      let adjust = function(oldvalue, increase) {
+      	var asnumber = parseInt(oldvalue, 10);//remove "px"
+        asnumber += increase;
+        return Math.max(0,Math.min(asnumber,600)) + "px";
+      }
+      let movefn = function() {
+      	var bug = document.getElementById(uniqueId);
+        if (0.05 > Math.random() && bug.speed > 0) {//5% chance to move direction
+        	bug.direction += 1;
+				  bug.style.transform = "rotate("+(bug.direction+2)*45+"deg)";
+  			}
+        var d = bug.direction%8;
+        if (d == 1 || d == 2 || d == 3) {//increase top
+        	bug.style.top = adjust(bug.style.top,bug.speed);
+        }
+        if (d == 5 || d == 6 || d == 7) {//decrease top
+        	bug.style.top = adjust(bug.style.top,-bug.speed);
+        }
+        if (d == 3|| d == 4 || d == 5) {//decrease left
+        	bug.style.left = adjust(bug.style.left,-bug.speed);
+        }
+        if (d == 7 || d == 0 || d == 1) {//increase left
+        	bug.style.left = adjust(bug.style.left,bug.speed);
+        }
+
+        window.setTimeout(movefn, 50);//move in 50 msec
+      }
+      window.setTimeout(movefn, 50);
+      document.body.appendChild(ladybug);
+      i++;
+    }
+  })();
+</script>
+</body>
+</html>
